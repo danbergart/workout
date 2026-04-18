@@ -269,7 +269,17 @@ function skipRest() {
   document.getElementById('restTimerBar').classList.remove('visible');
 }
 
-function startWorkout() {
+let wakeLock = null;
+
+async function acquireWakeLock() {
+  try { if ('wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); } } catch {}
+}
+
+function releaseWakeLock() {
+  try { if (wakeLock) { wakeLock.release(); wakeLock = null; } } catch {}
+}
+
+async function startWorkout() {
   if (started) return;
   started = true; sessionSaved = false;
   startTime = Date.now();
@@ -280,6 +290,7 @@ function startWorkout() {
   }, 1000);
   document.querySelector('.ex-card')?.classList.add('active');
   showToast("BUSINESS IS ABOUT TO PICK UP.");
+  await acquireWakeLock();
 }
 
 function tickSet(exIdx, setIdx) {
@@ -318,6 +329,7 @@ function updateProgress() {
 
 function finishWorkout() {
   clearInterval(sessionTimerInterval);
+  releaseWakeLock();
   endTime = Date.now();
   document.getElementById('finishTime').textContent = `Total time: ${formatTime(endTime - startTime)}`;
   document.getElementById('finishBlock').classList.add('visible');
@@ -348,6 +360,7 @@ function saveSession() {
 function resetWorkout() {
   ticked = 0; started = false; startTime = null; endTime = null; sessionSaved = false;
   clearInterval(sessionTimerInterval);
+  releaseWakeLock();
   skipRest();
   document.getElementById('sessionTimer').textContent = '00:00';
   document.getElementById('progressBar').style.width = '0%';
