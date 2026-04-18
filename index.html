@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dan's Workout</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0e;
+    --surface: #1a1a1a;
+    --surface2: #222;
+    --border: #2e2e2e;
+    --accent: #c8f135;
+    --text: #f0f0f0;
+    --muted: #aaa;
+    --done-text: #444;
+    --red: #ff4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; padding: 20px 16px 120px; }
+
+  .nav { display: flex; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .nav-btn { flex: 1; background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 0; cursor: pointer; transition: all 0.2s; margin-bottom: -1px; }
+  .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+  h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.6rem; letter-spacing: 2px; color: var(--accent); line-height: 1; }
+  .subtitle { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 1px; }
+  .timer-block { text-align: right; }
+  .session-timer { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; color: var(--text); letter-spacing: 3px; line-height: 1; }
+  .timer-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  .start-btn { display: block; width: 100%; background: var(--accent); color: #0e0e0e; border: none; padding: 14px; font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 2px; cursor: pointer; margin-bottom: 20px; transition: opacity 0.2s; }
+  .start-btn:hover { opacity: 0.88; }
+  .start-btn:disabled { opacity: 0.3; cursor: default; }
+
+  .progress-wrap { background: var(--surface); height: 3px; margin-bottom: 6px; border-radius: 2px; overflow: hidden; }
+  .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; }
+  .progress-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--muted); text-align: right; margin-bottom: 18px; }
+
+  /* REST TIMER */
+  .rest-timer-bar { position: fixed; top: 0; left: 0; right: 0; background: var(--surface); border-bottom: 1px solid var(--border); z-index: 1000; display: none; flex-direction: column; align-items: center; padding: 10px 20px 12px; }
+  .rest-timer-bar.visible { display: flex; }
+  .rest-timer-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .rest-timer-count { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; color: var(--accent); letter-spacing: 4px; line-height: 1; }
+  .rest-timer-count.urgent { color: var(--red); }
+  .rest-timer-progress { width: 100%; height: 3px; background: var(--border); margin-top: 8px; border-radius: 2px; overflow: hidden; }
+  .rest-timer-fill { height: 100%; background: var(--accent); width: 100%; transition: width 1s linear; }
+  .rest-timer-fill.urgent { background: var(--red); }
+  .rest-skip { background: none; border: 1px solid var(--muted); color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.6rem; padding: 3px 10px; cursor: pointer; margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; }
+  .rest-skip:hover { border-color: var(--text); color: var(--text); }
+
+  .ex-card { background: var(--surface); border: 1px solid var(--border); margin-bottom: 10px; padding: 14px; transition: border-color 0.2s; }
+  .ex-card.active { border-color: var(--accent); }
+  .ex-card.completed { opacity: 0.45; border-color: #2a2a2a; }
+  .ex-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .ex-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.25rem; letter-spacing: 1px; }
+  .ex-card.completed .ex-name { color: var(--done-text); }
+  .ex-weight { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--accent); letter-spacing: 1px; margin-top: 2px; line-height: 1; }
+  .ex-card.completed .ex-weight { color: var(--done-text); }
+  .ex-reps { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--muted); margin-top: 2px; letter-spacing: 1px; }
+  .ex-hint { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: rgba(200,241,53,0.5); margin-bottom: 10px; padding: 4px 8px; border-left: 2px solid rgba(200,241,53,0.3); }
+  .ex-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .demo-link { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 3px 7px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; transition: opacity 0.2s; }
+  .demo-link:hover { opacity: 1; }
+  .done-tick { font-size: 1rem; color: var(--accent); display: none; }
+  .ex-card.completed .done-tick { display: block; }
+
+  .sets-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .set-btn { flex: 1; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); padding: 13px 0; font-family: 'DM Mono', monospace; font-size: 0.7rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.15s; text-align: center; }
+  .set-btn:hover:not(.ticked) { border-color: var(--accent); color: var(--accent); }
+  .set-btn.ticked { background: var(--accent); border-color: var(--accent); color: #0e0e0e; font-weight: 700; cursor: default; }
+  .set-btn.ticked::after { content: ' ✓'; }
+
+  .notes-toggle { background: none; border: none; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; padding: 0; display: flex; align-items: center; gap: 5px; transition: color 0.2s; }
+  .notes-toggle:hover { color: var(--text); }
+  .notes-arrow { display: inline-block; transition: transform 0.2s; font-size: 0.5rem; }
+  .notes-toggle.open .notes-arrow { transform: rotate(90deg); }
+  .notes-area { display: none; margin-top: 8px; }
+  .notes-area.open { display: block; }
+  .notes-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.72rem; padding: 9px 11px; resize: vertical; min-height: 58px; outline: none; transition: border-color 0.2s; }
+  .notes-input:focus { border-color: var(--accent); }
+  .notes-input::placeholder { color: var(--muted); }
+
+  .toast { position: fixed; bottom: 0; left: 0; right: 0; background: var(--accent); color: #0e0e0e; font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1.5px; padding: 14px 20px; text-align: center; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); z-index: 998; pointer-events: none; }
+  .toast.visible { transform: translateY(0); }
+
+  .finish-block { display: none; text-align: center; padding: 36px 20px; border: 1px solid var(--accent); margin-top: 20px; }
+  .finish-block.visible { display: block; }
+  .finish-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; color: var(--accent); letter-spacing: 3px; }
+  .finish-time { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--muted); margin-top: 6px; }
+  .finish-actions { display: flex; gap: 10px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
+  .ghost-btn { background: transparent; border: 1px solid var(--muted); color: var(--muted); padding: 11px 20px; font-family: 'DM Mono', monospace; font-size: 0.7rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; }
+  .ghost-btn:hover { border-color: var(--text); color: var(--text); }
+  .save-note { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--muted); margin-top: 12px; }
+
+  .history-empty { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--muted); text-align: center; padding: 40px 0; }
+  .history-session { background: var(--surface); border: 1px solid var(--border); margin-bottom: 12px; }
+  .history-header { padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+  .history-date { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1px; transition: color 0.2s; }
+  .history-header:hover .history-date { color: var(--accent); }
+  .history-meta { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--muted); }
+  .history-body { display: none; border-top: 1px solid var(--border); padding: 12px 14px; }
+  .history-body.open { display: block; }
+  .history-ex { margin-bottom: 10px; }
+  .history-ex-name { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+  .history-ex-detail { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+  .history-ex-note { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--text); margin-top: 3px; font-style: italic; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+</style>
+</head>
+<body>
+
+<div class="rest-timer-bar" id="restTimerBar">
+  <div class="rest-timer-label">Rest — next set in</div>
+  <div class="rest-timer-count" id="restCount">60</div>
+  <div class="rest-timer-progress"><div class="rest-timer-fill" id="restFill"></div></div>
+  <button class="rest-skip" onclick="skipRest()">Skip rest</button>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showPage('workout', this)">Session</button>
+  <button class="nav-btn" onclick="showPage('history', this)">History</button>
+</div>
+
+<div id="workoutPage" class="page active">
+  <div class="page-header">
+    <div>
+      <h1>Session</h1>
+      <div class="subtitle">Upper Body · 3 sets each</div>
+    </div>
+    <div class="timer-block">
+      <div class="session-timer" id="sessionTimer">00:00</div>
+      <div class="timer-label">Elapsed</div>
+    </div>
+  </div>
+  <button class="start-btn" id="startBtn" onclick="startWorkout()">Start Session</button>
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 21 sets</div>
+  <div id="exercises"></div>
+  <div class="finish-block" id="finishBlock">
+    <div class="finish-title">Session Done 💪</div>
+    <div class="finish-time" id="finishTime"></div>
+    <div class="finish-actions">
+      <button class="ghost-btn" onclick="resetWorkout()">New Session</button>
+    </div>
+    <div class="save-note">Session saved to History.</div>
+  </div>
+</div>
+
+<div id="historyPage" class="page">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+    <h1>History</h1>
+    <button class="ghost-btn" onclick="clearHistory()" style="font-size:0.55rem;padding:6px 10px;">Clear All</button>
+  </div>
+  <div id="historyList"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DEFAULT_EXERCISES = [
+  { id: 'bench',   name: "Dumbbell Bench Press", weight: "15kg each",   sets: 3, reps: "8–10",   link: "https://www.youtube.com/shorts/o7TvO377OqA", hint: null },
+  { id: 'row',     name: "Dumbbell Row",          weight: "12.5kg each", sets: 3, reps: "8–10",   link: "https://www.youtube.com/shorts/z0rtLeSW5Cc", hint: "BOTH hands simultaneously — one dumbbell in each hand, pull together." },
+  { id: 'ohp',     name: "Overhead Press",        weight: "12.5kg each", sets: 3, reps: "8–10",   link: "https://www.youtube.com/shorts/wO0l5jW2NtQ", hint: null },
+  { id: 'lateral', name: "Lateral Raise",         weight: "5kg each",    sets: 3, reps: "12–15",  link: "https://www.youtube.com/shorts/lnVEvYCBGDo", hint: null },
+  { id: 'curl',    name: "Dumbbell Curl",         weight: "7.5kg each",  sets: 3, reps: "10–12",  link: "https://www.youtube.com/shorts/FwApweWh6SY", hint: null },
+  { id: 'skull',   name: "Skull Crushers",        weight: "7.5kg each",  sets: 3, reps: "10–12",  link: "https://www.youtube.com/shorts/HurmGkvE5s0", hint: null },
+  { id: 'plank',   name: "Plank",                 weight: "Bodyweight",  sets: 3, reps: "60 sec", link: null, hint: null },
+];
+
+const MESSAGES = [
+  "BUSINESS IS ABOUT TO PICK UP.",
+  "CAN YOU SMELLLLLL WHAT THE GYM IS COOKING.",
+  "AND THAT'S THE BOTTOM LINE — BECAUSE YOUR BODY SAID SO.",
+  "D-GENERATION X SAYS LIFT IT... OR SUCK IT.",
+  "THIS IS YOUR TIME. THIS IS YOUR MOMENT.",
+  "STONE COLD SAYS KEEP GOING.",
+  "IT DOESN'T MATTER WHAT YOUR ARMS THOUGHT — FINISH THE SET.",
+  "AND NEW... PERSONAL RECORD CHAMPION OF THE WORLD.",
+];
+
+const REST_DURATION = 60;
+let exercises = [];
+let sessionTimerInterval = null;
+let startTime = null;
+let endTime = null;
+let ticked = 0;
+let started = false;
+let sessionSaved = false;
+let toastTimeout = null;
+let restInterval = null;
+let restRemaining = 0;
+const total = DEFAULT_EXERCISES.reduce((a, e) => a + e.sets, 0);
+
+function storageGet(key) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
+  catch { return null; }
+}
+
+function storageSet(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); }
+  catch(e) { console.error('Storage error:', e); }
+}
+
+function init() {
+  const saved = storageGet('exercises');
+  exercises = saved ? mergeExercises(saved) : JSON.parse(JSON.stringify(DEFAULT_EXERCISES));
+  renderExercises();
+}
+
+function mergeExercises(saved) {
+  return DEFAULT_EXERCISES.map(def => {
+    const s = saved.find(e => e.id === def.id);
+    return s ? { ...def, weight: s.weight } : { ...def };
+  });
+}
+
+function showPage(page, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(page + 'Page').classList.add('active');
+  btn.classList.add('active');
+  if (page === 'history') renderHistory();
+}
+
+function formatTime(ms) {
+  const s = Math.floor(ms / 1000), m = Math.floor(s / 60), sec = s % 60;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => t.classList.remove('visible'), 4000);
+}
+
+function startRestTimer() {
+  clearInterval(restInterval);
+  restRemaining = REST_DURATION;
+  const bar = document.getElementById('restTimerBar');
+  const count = document.getElementById('restCount');
+  const fill = document.getElementById('restFill');
+  bar.classList.add('visible');
+  count.classList.remove('urgent');
+  fill.classList.remove('urgent');
+  count.textContent = restRemaining;
+  fill.style.transition = 'none';
+  fill.style.width = '100%';
+  setTimeout(() => {
+    fill.style.transition = 'width 1s linear';
+    fill.style.width = '0%';
+  }, 50);
+  restInterval = setInterval(() => {
+    restRemaining--;
+    count.textContent = restRemaining;
+    if (restRemaining <= 10) { count.classList.add('urgent'); fill.classList.add('urgent'); }
+    if (restRemaining <= 0) { clearInterval(restInterval); bar.classList.remove('visible'); showToast("REST OVER. GO."); }
+  }, 1000);
+}
+
+function skipRest() {
+  clearInterval(restInterval);
+  document.getElementById('restTimerBar').classList.remove('visible');
+}
+
+function startWorkout() {
+  if (started) return;
+  started = true; sessionSaved = false;
+  startTime = Date.now();
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('startBtn').textContent = 'Session Active';
+  sessionTimerInterval = setInterval(() => {
+    document.getElementById('sessionTimer').textContent = formatTime(Date.now() - startTime);
+  }, 1000);
+  document.querySelector('.ex-card')?.classList.add('active');
+  showToast("BUSINESS IS ABOUT TO PICK UP.");
+}
+
+function tickSet(exIdx, setIdx) {
+  if (!started) return;
+  const btn = document.getElementById(`set-${exIdx}-${setIdx}`);
+  if (btn.classList.contains('ticked')) return;
+  btn.classList.add('ticked');
+  btn.textContent = `Set ${setIdx + 1}`;
+  ticked++;
+  updateProgress();
+  checkComplete(exIdx);
+  const idx = Math.min(Math.floor((ticked / total) * MESSAGES.length), MESSAGES.length - 1);
+  showToast(MESSAGES[idx]);
+  if (ticked < total) startRestTimer();
+  if (ticked === total) { skipRest(); finishWorkout(); }
+}
+
+function checkComplete(exIdx) {
+  const ex = exercises[exIdx];
+  for (let s = 0; s < ex.sets; s++) {
+    if (!document.getElementById(`set-${exIdx}-${s}`)?.classList.contains('ticked')) return;
+  }
+  document.getElementById(`card-${exIdx}`).classList.remove('active');
+  document.getElementById(`card-${exIdx}`).classList.add('completed');
+  if (exIdx + 1 < exercises.length) {
+    const next = document.getElementById(`card-${exIdx + 1}`);
+    next?.classList.add('active');
+    next?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function updateProgress() {
+  document.getElementById('progressBar').style.width = (ticked / total * 100) + '%';
+  document.getElementById('progressLabel').textContent = `${ticked} / ${total} sets`;
+}
+
+function finishWorkout() {
+  clearInterval(sessionTimerInterval);
+  endTime = Date.now();
+  document.getElementById('finishTime').textContent = `Total time: ${formatTime(endTime - startTime)}`;
+  document.getElementById('finishBlock').classList.add('visible');
+  document.getElementById('finishBlock').scrollIntoView({ behavior: 'smooth' });
+  saveSession();
+}
+
+function saveSession() {
+  if (sessionSaved) return;
+  sessionSaved = true;
+  const date = new Date(startTime);
+  const sessionData = {
+    date: date.toISOString(),
+    dateStr: date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }),
+    duration: formatTime(endTime - startTime),
+    exercises: exercises.map((ex, i) => ({
+      name: ex.name, weight: ex.weight, reps: ex.reps,
+      sets: Array.from({length: ex.sets}, (_, s) => !!document.getElementById(`set-${i}-${s}`)?.classList.contains('ticked')),
+      note: document.getElementById(`notes-${i}`)?.value?.trim() || ''
+    }))
+  };
+  const history = storageGet('history') || [];
+  history.unshift(sessionData);
+  if (history.length > 50) history.pop();
+  storageSet('history', history);
+}
+
+function resetWorkout() {
+  ticked = 0; started = false; startTime = null; endTime = null; sessionSaved = false;
+  clearInterval(sessionTimerInterval);
+  skipRest();
+  document.getElementById('sessionTimer').textContent = '00:00';
+  document.getElementById('progressBar').style.width = '0%';
+  document.getElementById('progressLabel').textContent = `0 / ${total} sets`;
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('startBtn').textContent = 'Start Session';
+  document.getElementById('finishBlock').classList.remove('visible');
+  document.getElementById('toast').classList.remove('visible');
+  renderExercises();
+}
+
+function renderExercises() {
+  const c = document.getElementById('exercises');
+  c.innerHTML = '';
+  exercises.forEach((ex, i) => {
+    const card = document.createElement('div');
+    card.className = 'ex-card'; card.id = `card-${i}`;
+    const sets = Array.from({length: ex.sets}, (_, s) =>
+      `<button class="set-btn" id="set-${i}-${s}" onclick="tickSet(${i},${s})">Set ${s+1}</button>`
+    ).join('');
+    const hintHtml = ex.hint ? `<div class="ex-hint">⚑ ${ex.hint}</div>` : '';
+    card.innerHTML = `
+      <div class="ex-head">
+        <div style="flex:1;">
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-weight" id="wd-${i}">${ex.weight}</div>
+          <div class="ex-reps">${ex.reps} reps</div>
+        </div>
+        <div class="ex-right">
+          ${ex.link ? `<a class="demo-link" href="${ex.link}" target="_blank">Demo ↗</a>` : ''}
+          <span class="done-tick">✓</span>
+        </div>
+      </div>
+      ${hintHtml}
+      <div class="sets-row">${sets}</div>
+      <button class="notes-toggle" id="ntog-${i}" onclick="toggleNotes(${i})">
+        <span class="notes-arrow">▶</span> Note
+      </button>
+      <div class="notes-area" id="narea-${i}">
+        <textarea class="notes-input" id="notes-${i}" placeholder="e.g. felt easy, go heavier..."></textarea>
+      </div>
+    `;
+    c.appendChild(card);
+  });
+}
+
+function toggleNotes(i) {
+  document.getElementById(`narea-${i}`).classList.toggle('open');
+  document.getElementById(`ntog-${i}`).classList.toggle('open');
+}
+
+function renderHistory() {
+  const history = storageGet('history') || [];
+  const c = document.getElementById('historyList');
+  c.innerHTML = '';
+  if (!history.length) {
+    c.innerHTML = '<div class="history-empty">No sessions yet.</div>'; return;
+  }
+  history.forEach((s, si) => {
+    const div = document.createElement('div');
+    div.className = 'history-session';
+    const setsTotal = s.exercises?.reduce((a, e) => a + (e.sets?.filter(Boolean).length || 0), 0) || 0;
+    const exRows = (s.exercises || []).map(ex => {
+      const done = ex.sets?.filter(Boolean).length || 0;
+      return `<div class="history-ex">
+        <div class="history-ex-name">${ex.name}</div>
+        <div class="history-ex-detail">${ex.weight} · ${done}/${ex.sets?.length || 3} sets · ${ex.reps} reps</div>
+        ${ex.note ? `<div class="history-ex-note">→ ${ex.note}</div>` : ''}
+      </div>`;
+    }).join('');
+    div.innerHTML = `
+      <div class="history-header" onclick="toggleHistory(${si})">
+        <div>
+          <div class="history-date">${s.dateStr || 'Session'}</div>
+          <div class="history-meta">${s.duration || '--:--'} · ${setsTotal} sets</div>
+        </div>
+        <div style="color:var(--muted);font-size:0.7rem;">▼</div>
+      </div>
+      <div class="history-body" id="hb-${si}">${exRows}</div>
+    `;
+    c.appendChild(div);
+  });
+}
+
+function toggleHistory(si) { document.getElementById(`hb-${si}`).classList.toggle('open'); }
+
+function clearHistory() {
+  if (!confirm('Clear all session history?')) return;
+  storageSet('history', []);
+  renderHistory();
+}
+
+init();
+</script>
+</body>
+</html>
