@@ -14,14 +14,14 @@
     --accent: #c8f135;
     --text: #f0f0f0;
     --muted: #aaa;
-    --done-text: #444;
+    --done-text: #555;
     --red: #ff4444;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; padding: 20px 16px 120px; }
 
   .nav { display: flex; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
-  .nav-btn { flex: 1; background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 0; cursor: pointer; transition: all 0.2s; margin-bottom: -1px; }
+  .nav-btn { flex: 1; background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; padding: 12px 0; cursor: pointer; transition: all 0.2s; margin-bottom: -1px; }
   .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
   .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
@@ -31,81 +31,164 @@
   .session-timer { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; color: var(--text); letter-spacing: 3px; line-height: 1; }
   .timer-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
 
-  .start-btn { display: block; width: 100%; background: var(--accent); color: #0e0e0e; border: none; padding: 14px; font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 2px; cursor: pointer; margin-bottom: 20px; transition: opacity 0.2s; }
+  .start-btn { display: block; width: 100%; background: var(--accent); color: #0e0e0e; border: none; padding: 20px; font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; cursor: pointer; margin-bottom: 20px; transition: opacity 0.2s; }
   .start-btn:hover { opacity: 0.88; }
   .start-btn:disabled { opacity: 0.3; cursor: default; }
 
-  .progress-wrap { background: var(--surface); height: 3px; margin-bottom: 6px; border-radius: 2px; overflow: hidden; }
+  .progress-wrap { background: var(--surface); height: 4px; margin-bottom: 6px; border-radius: 2px; overflow: hidden; }
   .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; }
   .progress-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--muted); text-align: right; margin-bottom: 18px; }
 
-  /* REST TIMER */
-  .rest-timer-bar { position: fixed; top: 0; left: 0; right: 0; background: var(--surface); border-bottom: 1px solid var(--border); z-index: 1000; display: none; flex-direction: column; align-items: center; padding: 10px 20px 12px; }
-  .rest-timer-bar.visible { display: flex; }
-  .rest-timer-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-  .rest-timer-count { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; color: var(--accent); letter-spacing: 4px; line-height: 1; }
-  .rest-timer-count.urgent { color: var(--red); }
-  .rest-timer-progress { width: 100%; height: 3px; background: var(--border); margin-top: 8px; border-radius: 2px; overflow: hidden; }
-  .rest-timer-fill { height: 100%; background: var(--accent); width: 100%; transition: width 1s linear; }
-  .rest-timer-fill.urgent { background: var(--red); }
-  .rest-skip { background: none; border: 1px solid var(--muted); color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.6rem; padding: 3px 10px; cursor: pointer; margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; }
-  .rest-skip:hover { border-color: var(--text); color: var(--text); }
+  /* FULLSCREEN REST OVERLAY */
+  .rest-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: #000;
+    z-index: 2000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .rest-overlay.visible { display: flex; }
+  .rest-overlay-label { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; }
+  .rest-overlay-count {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22vw;
+    line-height: 1;
+    color: var(--accent);
+    letter-spacing: 4px;
+  }
+  .rest-overlay-count.urgent { color: var(--red); }
+  .rest-overlay-progress { width: 80%; max-width: 300px; height: 4px; background: var(--border); margin: 20px auto 0; border-radius: 2px; overflow: hidden; }
+  .rest-overlay-fill { height: 100%; background: var(--accent); width: 100%; transition: width 1s linear; }
+  .rest-overlay-fill.urgent { background: var(--red); }
+  .rest-skip-btn {
+    margin-top: 32px;
+    background: none;
+    border: 2px solid var(--muted);
+    color: var(--muted);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+    padding: 14px 40px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .rest-skip-btn:hover { border-color: var(--text); color: var(--text); }
 
-  .ex-card { background: var(--surface); border: 1px solid var(--border); margin-bottom: 10px; padding: 14px; transition: border-color 0.2s; }
+  /* FULLSCREEN GO ALERT */
+  .go-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--accent);
+    z-index: 3000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .go-overlay.visible { display: flex; animation: goFlash 0.3s ease; }
+  .go-text { font-family: 'Bebas Neue', sans-serif; font-size: 30vw; color: #0e0e0e; line-height: 1; letter-spacing: 4px; }
+  .go-sub { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: #0e0e0e; margin-top: 16px; opacity: 0.6; text-transform: uppercase; letter-spacing: 2px; }
+  @keyframes goFlash { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+  /* WWE MOTIVATION OVERLAY */
+  .wwe-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: #0e0e0e;
+    z-index: 2500;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+    cursor: pointer;
+  }
+  .wwe-overlay.visible { display: flex; animation: wwePop 0.25s ease; }
+  @keyframes wwePop { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+  .wwe-icon { font-size: 4rem; margin-bottom: 20px; }
+  .wwe-msg {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 9vw;
+    color: var(--accent);
+    line-height: 1.1;
+    letter-spacing: 2px;
+    max-width: 100%;
+  }
+  .wwe-tap { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); margin-top: 28px; text-transform: uppercase; letter-spacing: 2px; }
+
+  .ex-card { background: var(--surface); border: 1px solid var(--border); margin-bottom: 12px; padding: 16px; transition: border-color 0.2s; }
   .ex-card.active { border-color: var(--accent); }
-  .ex-card.completed { opacity: 0.45; border-color: #2a2a2a; }
+  .ex-card.completed { opacity: 0.4; border-color: #2a2a2a; }
   .ex-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-  .ex-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.25rem; letter-spacing: 1px; }
+  .ex-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 1px; }
   .ex-card.completed .ex-name { color: var(--done-text); }
-  .ex-weight { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--accent); letter-spacing: 1px; margin-top: 2px; line-height: 1; }
+  .ex-weight { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--accent); letter-spacing: 1px; margin-top: 2px; line-height: 1; }
   .ex-card.completed .ex-weight { color: var(--done-text); }
-  .ex-reps { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--muted); margin-top: 2px; letter-spacing: 1px; }
-  .ex-hint { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: rgba(200,241,53,0.5); margin-bottom: 10px; padding: 4px 8px; border-left: 2px solid rgba(200,241,53,0.3); }
+  .ex-reps { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--muted); margin-top: 2px; letter-spacing: 1px; }
+  .ex-hint { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: rgba(200,241,53,0.6); margin-bottom: 12px; padding: 5px 10px; border-left: 2px solid rgba(200,241,53,0.3); line-height: 1.5; }
   .ex-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .demo-link { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 3px 7px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; transition: opacity 0.2s; }
+  .demo-link { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 6px 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; transition: opacity 0.2s; }
   .demo-link:hover { opacity: 1; }
-  .done-tick { font-size: 1rem; color: var(--accent); display: none; }
+  .done-tick { font-size: 1.2rem; color: var(--accent); display: none; }
   .ex-card.completed .done-tick { display: block; }
 
-  .sets-row { display: flex; gap: 8px; margin-bottom: 10px; }
-  .set-btn { flex: 1; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); padding: 13px 0; font-family: 'DM Mono', monospace; font-size: 0.7rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.15s; text-align: center; }
+  /* BIG SET BUTTONS */
+  .sets-row { display: flex; gap: 10px; margin-bottom: 12px; }
+  .set-btn {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 20px 0;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.15s;
+    text-align: center;
+    -webkit-tap-highlight-color: transparent;
+  }
   .set-btn:hover:not(.ticked) { border-color: var(--accent); color: var(--accent); }
-  .set-btn.ticked { background: var(--accent); border-color: var(--accent); color: #0e0e0e; font-weight: 700; cursor: default; }
+  .set-btn.ticked { background: var(--accent); border-color: var(--accent); color: #0e0e0e; cursor: pointer; }
   .set-btn.ticked::after { content: ' ✓'; }
 
-  .notes-toggle { background: none; border: none; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; padding: 0; display: flex; align-items: center; gap: 5px; transition: color 0.2s; }
+  .notes-toggle { background: none; border: none; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; padding: 4px 0; display: flex; align-items: center; gap: 5px; transition: color 0.2s; }
   .notes-toggle:hover { color: var(--text); }
   .notes-arrow { display: inline-block; transition: transform 0.2s; font-size: 0.5rem; }
   .notes-toggle.open .notes-arrow { transform: rotate(90deg); }
   .notes-area { display: none; margin-top: 8px; }
   .notes-area.open { display: block; }
-  .notes-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.72rem; padding: 9px 11px; resize: vertical; min-height: 58px; outline: none; transition: border-color 0.2s; }
+  .notes-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.75rem; padding: 10px 12px; resize: vertical; min-height: 60px; outline: none; transition: border-color 0.2s; }
   .notes-input:focus { border-color: var(--accent); }
   .notes-input::placeholder { color: var(--muted); }
 
-  .toast { position: fixed; bottom: 0; left: 0; right: 0; background: var(--accent); color: #0e0e0e; font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1.5px; padding: 14px 20px; text-align: center; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); z-index: 998; pointer-events: none; }
+  .toast { position: fixed; bottom: 0; left: 0; right: 0; background: var(--accent); color: #0e0e0e; font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 1.5px; padding: 16px 20px; text-align: center; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); z-index: 997; pointer-events: none; }
   .toast.visible { transform: translateY(0); }
 
-  .finish-block { display: none; text-align: center; padding: 36px 20px; border: 1px solid var(--accent); margin-top: 20px; }
+  .finish-block { display: none; text-align: center; padding: 40px 20px; border: 1px solid var(--accent); margin-top: 20px; }
   .finish-block.visible { display: block; }
-  .finish-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; color: var(--accent); letter-spacing: 3px; }
-  .finish-time { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--muted); margin-top: 6px; }
-  .finish-actions { display: flex; gap: 10px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
-  .ghost-btn { background: transparent; border: 1px solid var(--muted); color: var(--muted); padding: 11px 20px; font-family: 'DM Mono', monospace; font-size: 0.7rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; }
+  .finish-title { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; color: var(--accent); letter-spacing: 3px; }
+  .finish-time { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--muted); margin-top: 8px; }
+  .finish-actions { display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+  .ghost-btn { background: transparent; border: 1px solid var(--muted); color: var(--muted); padding: 14px 24px; font-family: 'DM Mono', monospace; font-size: 0.75rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; }
   .ghost-btn:hover { border-color: var(--text); color: var(--text); }
   .save-note { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--muted); margin-top: 12px; }
 
   .history-empty { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--muted); text-align: center; padding: 40px 0; }
   .history-session { background: var(--surface); border: 1px solid var(--border); margin-bottom: 12px; }
-  .history-header { padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-  .history-date { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1px; transition: color 0.2s; }
+  .history-header { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+  .history-date { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 1px; transition: color 0.2s; }
   .history-header:hover .history-date { color: var(--accent); }
-  .history-meta { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--muted); }
-  .history-body { display: none; border-top: 1px solid var(--border); padding: 12px 14px; }
+  .history-meta { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--muted); }
+  .history-body { display: none; border-top: 1px solid var(--border); padding: 14px 16px; }
   .history-body.open { display: block; }
-  .history-ex { margin-bottom: 10px; }
-  .history-ex-name { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
-  .history-ex-detail { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+  .history-ex { margin-bottom: 12px; }
+  .history-ex-name { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+  .history-ex-detail { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); margin-top: 3px; }
   .history-ex-note { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--text); margin-top: 3px; font-style: italic; }
 
   .page { display: none; }
@@ -114,11 +197,25 @@
 </head>
 <body>
 
-<div class="rest-timer-bar" id="restTimerBar">
-  <div class="rest-timer-label">Rest — next set in</div>
-  <div class="rest-timer-count" id="restCount">60</div>
-  <div class="rest-timer-progress"><div class="rest-timer-fill" id="restFill"></div></div>
-  <button class="rest-skip" onclick="skipRest()">Skip rest</button>
+<!-- FULLSCREEN REST OVERLAY -->
+<div class="rest-overlay" id="restOverlay">
+  <div class="rest-overlay-label">Rest — next set in</div>
+  <div class="rest-overlay-count" id="restCount">50</div>
+  <div class="rest-overlay-progress"><div class="rest-overlay-fill" id="restFill"></div></div>
+  <button class="rest-skip-btn" onclick="skipRest()">Skip Rest</button>
+</div>
+
+<!-- WWE MOTIVATION OVERLAY -->
+<div class="wwe-overlay" id="wweOverlay" onclick="dismissWWE()">
+  <div class="wwe-icon" id="wweIcon"></div>
+  <div class="wwe-msg" id="wweMsg"></div>
+  <div class="wwe-tap">Tap to start rest timer</div>
+</div>
+
+<!-- FULLSCREEN GO ALERT -->
+<div class="go-overlay" id="goOverlay" onclick="dismissGo()">
+  <div class="go-text">GO</div>
+  <div class="go-sub">Tap anywhere to continue</div>
 </div>
 
 <div class="nav">
@@ -172,18 +269,35 @@ const DEFAULT_EXERCISES = [
   { id: 'plank',   name: "Plank",                 weight: "Bodyweight",  sets: 3, reps: "60 sec", link: null, hint: null },
 ];
 
-const MESSAGES = [
-  "BUSINESS IS ABOUT TO PICK UP.",
-  "CAN YOU SMELLLLLL WHAT THE GYM IS COOKING.",
-  "AND THAT'S THE BOTTOM LINE — BECAUSE YOUR BODY SAID SO.",
-  "D-GENERATION X SAYS LIFT IT... OR SUCK IT.",
-  "THIS IS YOUR TIME. THIS IS YOUR MOMENT.",
-  "STONE COLD SAYS KEEP GOING.",
-  "IT DOESN'T MATTER WHAT YOUR ARMS THOUGHT — FINISH THE SET.",
-  "AND NEW... PERSONAL RECORD CHAMPION OF THE WORLD.",
+const WWE_QUOTES = [
+  { icon: "💀", msg: "REST IN PEACE... TO YOUR EXCUSES." },
+  { icon: "🍺", msg: "AND THAT'S THE BOTTOM LINE — BECAUSE STONE COLD SAID SO." },
+  { icon: "🐍", msg: "CAN YOU SMELLLLLL WHAT THE GYM IS COOKING." },
+  { icon: "🎤", msg: "IF YA SMELLLL... WHAT YOU'RE BUILDING." },
+  { icon: "🔔", msg: "BUSINESS IS ABOUT TO PICK UP." },
+  { icon: "💪", msg: "DX SAYS... LIFT IT OR LOSE IT." },
+  { icon: "👑", msg: "I AM THE GAME. AND THIS IS MY SESSION." },
+  { icon: "🐍", msg: "IT DOESN'T MATTER WHAT YOUR ARMS THOUGHT." },
+  { icon: "⚡", msg: "THIS IS YOUR TIME. THIS IS YOUR MOMENT." },
+  { icon: "🍺", msg: "STONE COLD SAYS KEEP GOING." },
+  { icon: "🎺", msg: "OH YOU DIDN'T KNOW? YOUR GAINS ARE ABOUT TO SHOW." },
+  { icon: "🔥", msg: "SUCK IT. AND DO THE NEXT SET." },
+  { icon: "💀", msg: "NO CHANCE IN HELL... YOU'RE STOPPING NOW." },
+  { icon: "🏆", msg: "AND NEW... PERSONAL RECORD CHAMPION OF THE WORLD." },
+  { icon: "🐍", msg: "THE MOST ELECTRIFYING WORKOUT IN GYM ENTERTAINMENT TODAY." },
+  { icon: "⚡", msg: "ENOUGH TALK. TIME TO WALK." },
 ];
 
-const REST_DURATION = 60;
+let lastWWEIdx = -1;
+
+function getWWEQuote() {
+  let idx;
+  do { idx = Math.floor(Math.random() * WWE_QUOTES.length); } while (idx === lastWWEIdx);
+  lastWWEIdx = idx;
+  return WWE_QUOTES[idx];
+}
+
+const REST_DURATION = 50;
 let exercises = [];
 let sessionTimerInterval = null;
 let startTime = null;
@@ -194,16 +308,25 @@ let sessionSaved = false;
 let toastTimeout = null;
 let restInterval = null;
 let restRemaining = 0;
+let wakeLock = null;
 const total = DEFAULT_EXERCISES.reduce((a, e) => a + e.sets, 0);
 
+// ── STORAGE ──
 function storageGet(key) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
   catch { return null; }
 }
-
 function storageSet(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); }
   catch(e) { console.error('Storage error:', e); }
+}
+
+// ── WAKE LOCK ──
+async function acquireWakeLock() {
+  try { if ('wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); } } catch {}
+}
+function releaseWakeLock() {
+  try { if (wakeLock) { wakeLock.release(); wakeLock = null; } } catch {}
 }
 
 function init() {
@@ -240,45 +363,67 @@ function showToast(msg) {
   toastTimeout = setTimeout(() => t.classList.remove('visible'), 4000);
 }
 
+// ── WWE OVERLAY ──
+function showWWE(thenRest) {
+  const quote = getWWEQuote();
+  document.getElementById('wweIcon').textContent = quote.icon;
+  document.getElementById('wweMsg').textContent = quote.msg;
+  document.getElementById('wweOverlay').dataset.thenRest = thenRest ? '1' : '0';
+  document.getElementById('wweOverlay').classList.add('visible');
+}
+
+function dismissWWE() {
+  const overlay = document.getElementById('wweOverlay');
+  overlay.classList.remove('visible');
+  if (overlay.dataset.thenRest === '1') startRestTimer();
+}
+
+// ── REST TIMER ──
 function startRestTimer() {
   clearInterval(restInterval);
   restRemaining = REST_DURATION;
-  const bar = document.getElementById('restTimerBar');
+  const overlay = document.getElementById('restOverlay');
   const count = document.getElementById('restCount');
   const fill = document.getElementById('restFill');
-  bar.classList.add('visible');
+  overlay.classList.add('visible');
   count.classList.remove('urgent');
   fill.classList.remove('urgent');
   count.textContent = restRemaining;
   fill.style.transition = 'none';
   fill.style.width = '100%';
   setTimeout(() => {
-    fill.style.transition = 'width 1s linear';
+    fill.style.transition = `width 1s linear`;
     fill.style.width = '0%';
   }, 50);
   restInterval = setInterval(() => {
     restRemaining--;
     count.textContent = restRemaining;
     if (restRemaining <= 10) { count.classList.add('urgent'); fill.classList.add('urgent'); }
-    if (restRemaining <= 0) { clearInterval(restInterval); bar.classList.remove('visible'); showToast("REST OVER. GO."); }
+    if (restRemaining <= 0) {
+      clearInterval(restInterval);
+      overlay.classList.remove('visible');
+      showGoAlert();
+    }
   }, 1000);
 }
 
 function skipRest() {
   clearInterval(restInterval);
-  document.getElementById('restTimerBar').classList.remove('visible');
+  document.getElementById('restOverlay').classList.remove('visible');
+  showGoAlert();
 }
 
-let wakeLock = null;
-
-async function acquireWakeLock() {
-  try { if ('wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); } } catch {}
+function showGoAlert() {
+  const go = document.getElementById('goOverlay');
+  go.classList.add('visible');
+  setTimeout(() => go.classList.remove('visible'), 2500);
 }
 
-function releaseWakeLock() {
-  try { if (wakeLock) { wakeLock.release(); wakeLock = null; } } catch {}
+function dismissGo() {
+  document.getElementById('goOverlay').classList.remove('visible');
 }
 
+// ── WORKOUT ──
 async function startWorkout() {
   if (started) return;
   started = true; sessionSaved = false;
@@ -296,15 +441,26 @@ async function startWorkout() {
 function tickSet(exIdx, setIdx) {
   if (!started) return;
   const btn = document.getElementById(`set-${exIdx}-${setIdx}`);
-  if (btn.classList.contains('ticked')) return;
+
+  // UNTICK if already ticked
+  if (btn.classList.contains('ticked')) {
+    btn.classList.remove('ticked');
+    btn.textContent = `Set ${setIdx + 1}`;
+    ticked--;
+    updateProgress();
+    // Re-activate card if it was completed
+    const card = document.getElementById(`card-${exIdx}`);
+    card.classList.remove('completed');
+    card.classList.add('active');
+    return;
+  }
+
   btn.classList.add('ticked');
   btn.textContent = `Set ${setIdx + 1}`;
   ticked++;
   updateProgress();
   checkComplete(exIdx);
-  const idx = Math.min(Math.floor((ticked / total) * MESSAGES.length), MESSAGES.length - 1);
-  showToast(MESSAGES[idx]);
-  if (ticked < total) startRestTimer();
+  if (ticked < total) showWWE(true);
   if (ticked === total) { skipRest(); finishWorkout(); }
 }
 
@@ -361,7 +517,10 @@ function resetWorkout() {
   ticked = 0; started = false; startTime = null; endTime = null; sessionSaved = false;
   clearInterval(sessionTimerInterval);
   releaseWakeLock();
-  skipRest();
+  clearInterval(restInterval);
+  document.getElementById('restOverlay').classList.remove('visible');
+  document.getElementById('goOverlay').classList.remove('visible');
+  document.getElementById('wweOverlay').classList.remove('visible');
   document.getElementById('sessionTimer').textContent = '00:00';
   document.getElementById('progressBar').style.width = '0%';
   document.getElementById('progressLabel').textContent = `0 / ${total} sets`;
