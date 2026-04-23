@@ -49,23 +49,23 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 40px 20px;
+    padding: 20px;
   }
   .rest-overlay.visible { display: flex; }
-  .rest-overlay-label { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; }
+  .rest-overlay-label { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 0; }
   .rest-overlay-count {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 22vw;
-    line-height: 1;
+    font-size: 55vw;
+    line-height: 0.9;
     color: var(--accent);
-    letter-spacing: 4px;
+    letter-spacing: -2px;
   }
   .rest-overlay-count.urgent { color: var(--red); }
-  .rest-overlay-progress { width: 80%; max-width: 300px; height: 4px; background: var(--border); margin: 20px auto 0; border-radius: 2px; overflow: hidden; }
+  .rest-overlay-progress { width: 70%; height: 4px; background: var(--border); margin: 16px auto 0; border-radius: 2px; overflow: hidden; }
   .rest-overlay-fill { height: 100%; background: var(--accent); width: 100%; transition: width 1s linear; }
   .rest-overlay-fill.urgent { background: var(--red); }
   .rest-skip-btn {
-    margin-top: 32px;
+    margin-top: 24px;
     background: none;
     border: 2px solid var(--muted);
     color: var(--muted);
@@ -97,28 +97,28 @@
   /* WWE MOTIVATION OVERLAY */
   .wwe-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: #0e0e0e;
+    background: #000;
     z-index: 2500;
     display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 40px 24px;
+    padding: 30px 20px;
     cursor: pointer;
   }
-  .wwe-overlay.visible { display: flex; animation: wwePop 0.25s ease; }
-  @keyframes wwePop { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
-  .wwe-icon { font-size: 4rem; margin-bottom: 20px; }
+  .wwe-overlay.visible { display: flex; animation: wwePop 0.2s ease; }
+  @keyframes wwePop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+  .wwe-icon { font-size: 5rem; margin-bottom: 16px; line-height: 1; }
   .wwe-msg {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 9vw;
+    font-size: 13vw;
     color: var(--accent);
-    line-height: 1.1;
+    line-height: 1.05;
     letter-spacing: 2px;
-    max-width: 100%;
+    width: 100%;
   }
-  .wwe-tap { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); margin-top: 28px; text-transform: uppercase; letter-spacing: 2px; }
+  .wwe-tap { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-top: 32px; text-transform: uppercase; letter-spacing: 2px; }
 
   .ex-card { background: var(--surface); border: 1px solid var(--border); margin-bottom: 12px; padding: 16px; transition: border-color 0.2s; }
   .ex-card.active { border-color: var(--accent); }
