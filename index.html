@@ -18,67 +18,105 @@
     --red: #ff4444;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; padding: 20px 16px 120px; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; padding: 20px 16px 140px; }
 
+  /* NAV */
   .nav { display: flex; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
   .nav-btn { flex: 1; background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; padding: 12px 0; cursor: pointer; transition: all 0.2s; margin-bottom: -1px; }
   .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-  .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+  /* HEADER */
+  .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
   h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.6rem; letter-spacing: 2px; color: var(--accent); line-height: 1; }
   .subtitle { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 1px; }
-  .timer-block { text-align: right; }
+  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
   .session-timer { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; color: var(--text); letter-spacing: 3px; line-height: 1; }
   .timer-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
 
+  /* WAKE LOCK TOGGLE */
+  .wake-toggle { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .wake-toggle-label { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .wake-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); transition: background 0.2s; }
+  .wake-dot.on { background: var(--accent); }
+
+  /* START BUTTON */
   .start-btn { display: block; width: 100%; background: var(--accent); color: #0e0e0e; border: none; padding: 20px; font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; cursor: pointer; margin-bottom: 20px; transition: opacity 0.2s; }
   .start-btn:hover { opacity: 0.88; }
   .start-btn:disabled { opacity: 0.3; cursor: default; }
 
+  /* PROGRESS */
   .progress-wrap { background: var(--surface); height: 4px; margin-bottom: 6px; border-radius: 2px; overflow: hidden; }
   .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; }
   .progress-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--muted); text-align: right; margin-bottom: 18px; }
 
-  /* FULLSCREEN REST OVERLAY */
-  .rest-overlay {
+  /* ═══════════════════════════════════════════
+     COMBINED REST + QUOTE FULLSCREEN OVERLAY
+  ═══════════════════════════════════════════ */
+  .rest-screen {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: #000;
     z-index: 2000;
     display: none;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    padding: 32px 20px 28px;
     text-align: center;
-    padding: 20px;
   }
-  .rest-overlay.visible { display: flex; }
-  .rest-overlay-label { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 0; }
-  .rest-overlay-count {
+  .rest-screen.visible { display: flex; }
+
+  .rest-screen-top { width: 100%; }
+  .rest-screen-label { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 2px; }
+  .rest-screen-count {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 55vw;
-    line-height: 0.9;
+    font-size: 42vw;
+    line-height: 0.85;
     color: var(--accent);
     letter-spacing: -2px;
+    transition: color 0.3s;
   }
-  .rest-overlay-count.urgent { color: var(--red); }
-  .rest-overlay-progress { width: 70%; height: 4px; background: var(--border); margin: 16px auto 0; border-radius: 2px; overflow: hidden; }
-  .rest-overlay-fill { height: 100%; background: var(--accent); width: 100%; transition: width 1s linear; }
-  .rest-overlay-fill.urgent { background: var(--red); }
-  .rest-skip-btn {
-    margin-top: 24px;
-    background: none;
-    border: 2px solid var(--muted);
-    color: var(--muted);
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.4rem;
-    letter-spacing: 2px;
-    padding: 14px 40px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .rest-skip-btn:hover { border-color: var(--text); color: var(--text); }
+  .rest-screen-count.urgent { color: var(--red); }
+  .rest-screen-progress { width: 100%; height: 4px; background: var(--border); margin-top: 10px; border-radius: 2px; overflow: hidden; }
+  .rest-screen-fill { height: 100%; background: var(--accent); width: 100%; transition: width 1s linear; }
+  .rest-screen-fill.urgent { background: var(--red); }
 
-  /* FULLSCREEN GO ALERT */
+  .rest-screen-quote { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px 0; }
+  .rest-screen-icon { font-size: 3.5rem; margin-bottom: 12px; line-height: 1; }
+  .rest-screen-msg {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11vw;
+    color: var(--accent);
+    line-height: 1.05;
+    letter-spacing: 1px;
+    width: 100%;
+  }
+
+  .rest-screen-btns { display: flex; gap: 12px; width: 100%; }
+  .rest-hide-btn { flex: 1; background: none; border: 2px solid var(--muted); color: var(--muted); font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 2px; padding: 14px; cursor: pointer; transition: all 0.2s; }
+  .rest-hide-btn:hover { border-color: var(--text); color: var(--text); }
+  .rest-skip-btn { flex: 1; background: var(--accent); border: 2px solid var(--accent); color: #0e0e0e; font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 2px; padding: 14px; cursor: pointer; transition: opacity 0.2s; }
+  .rest-skip-btn:hover { opacity: 0.88; }
+
+  /* MINI REST BAR (when hidden) */
+  .mini-rest {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 2px solid var(--accent);
+    z-index: 1500;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    cursor: pointer;
+  }
+  .mini-rest.visible { display: flex; }
+  .mini-rest-left { display: flex; align-items: center; gap: 12px; }
+  .mini-rest-count { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; color: var(--accent); letter-spacing: 2px; line-height: 1; }
+  .mini-rest-count.urgent { color: var(--red); }
+  .mini-rest-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .mini-expand-btn { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; background: none; border: 1px solid var(--accent); padding: 6px 12px; cursor: pointer; }
+
+  /* GO SCREEN */
   .go-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: var(--accent);
@@ -89,95 +127,59 @@
     justify-content: center;
     cursor: pointer;
   }
-  .go-overlay.visible { display: flex; animation: goFlash 0.3s ease; }
-  .go-text { font-family: 'Bebas Neue', sans-serif; font-size: 30vw; color: #0e0e0e; line-height: 1; letter-spacing: 4px; }
-  .go-sub { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: #0e0e0e; margin-top: 16px; opacity: 0.6; text-transform: uppercase; letter-spacing: 2px; }
-  @keyframes goFlash { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  .go-overlay.visible { display: flex; animation: goFlash 0.25s ease; }
+  .go-text { font-family: 'Bebas Neue', sans-serif; font-size: 40vw; color: #0e0e0e; line-height: 1; letter-spacing: 2px; }
+  .go-sub { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: #0e0e0e; margin-top: 12px; opacity: 0.5; text-transform: uppercase; letter-spacing: 2px; }
+  @keyframes goFlash { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
 
-  /* WWE MOTIVATION OVERLAY */
-  .wwe-overlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: #000;
-    z-index: 2500;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 30px 20px;
-    cursor: pointer;
-  }
-  .wwe-overlay.visible { display: flex; animation: wwePop 0.2s ease; }
-  @keyframes wwePop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
-  .wwe-icon { font-size: 5rem; margin-bottom: 16px; line-height: 1; }
-  .wwe-msg {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 13vw;
-    color: var(--accent);
-    line-height: 1.05;
-    letter-spacing: 2px;
-    width: 100%;
-  }
-  .wwe-tap { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-top: 32px; text-transform: uppercase; letter-spacing: 2px; }
-
+  /* EXERCISE CARDS */
   .ex-card { background: var(--surface); border: 1px solid var(--border); margin-bottom: 12px; padding: 16px; transition: border-color 0.2s; }
   .ex-card.active { border-color: var(--accent); }
   .ex-card.completed { opacity: 0.4; border-color: #2a2a2a; }
   .ex-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
   .ex-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 1px; }
   .ex-card.completed .ex-name { color: var(--done-text); }
-  .ex-weight { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--accent); letter-spacing: 1px; margin-top: 2px; line-height: 1; }
+  .ex-weight { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--accent); letter-spacing: 1px; line-height: 1; margin-top: 2px; }
   .ex-card.completed .ex-weight { color: var(--done-text); }
-  .ex-reps { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--muted); margin-top: 2px; letter-spacing: 1px; }
+  .ex-reps { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--muted); margin-top: 2px; letter-spacing: 1px; }
   .ex-hint { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: rgba(200,241,53,0.6); margin-bottom: 12px; padding: 5px 10px; border-left: 2px solid rgba(200,241,53,0.3); line-height: 1.5; }
   .ex-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .demo-link { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 6px 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; transition: opacity 0.2s; }
-  .demo-link:hover { opacity: 1; }
+  .demo-link { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 6px 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
   .done-tick { font-size: 1.2rem; color: var(--accent); display: none; }
   .ex-card.completed .done-tick { display: block; }
 
-  /* BIG SET BUTTONS */
+  /* SET BUTTONS */
   .sets-row { display: flex; gap: 10px; margin-bottom: 12px; }
-  .set-btn {
-    flex: 1;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 20px 0;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.3rem;
-    cursor: pointer;
-    letter-spacing: 1px;
-    transition: all 0.15s;
-    text-align: center;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .set-btn:hover:not(.ticked) { border-color: var(--accent); color: var(--accent); }
-  .set-btn.ticked { background: var(--accent); border-color: var(--accent); color: #0e0e0e; cursor: pointer; }
+  .set-btn { flex: 1; background: var(--surface2); border: 2px solid var(--border); color: var(--muted); padding: 22px 0; font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; cursor: pointer; letter-spacing: 1px; transition: all 0.15s; text-align: center; -webkit-tap-highlight-color: transparent; }
+  .set-btn:active { transform: scale(0.97); }
+  .set-btn.ticked { background: var(--accent); border-color: var(--accent); color: #0e0e0e; }
   .set-btn.ticked::after { content: ' ✓'; }
 
-  .notes-toggle { background: none; border: none; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; padding: 4px 0; display: flex; align-items: center; gap: 5px; transition: color 0.2s; }
-  .notes-toggle:hover { color: var(--text); }
+  /* NOTES */
+  .notes-toggle { background: none; border: none; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; padding: 4px 0; display: flex; align-items: center; gap: 5px; }
   .notes-arrow { display: inline-block; transition: transform 0.2s; font-size: 0.5rem; }
   .notes-toggle.open .notes-arrow { transform: rotate(90deg); }
   .notes-area { display: none; margin-top: 8px; }
   .notes-area.open { display: block; }
-  .notes-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.75rem; padding: 10px 12px; resize: vertical; min-height: 60px; outline: none; transition: border-color 0.2s; }
+  .notes-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.75rem; padding: 10px 12px; resize: vertical; min-height: 60px; outline: none; }
   .notes-input:focus { border-color: var(--accent); }
   .notes-input::placeholder { color: var(--muted); }
 
+  /* TOAST */
   .toast { position: fixed; bottom: 0; left: 0; right: 0; background: var(--accent); color: #0e0e0e; font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 1.5px; padding: 16px 20px; text-align: center; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); z-index: 997; pointer-events: none; }
   .toast.visible { transform: translateY(0); }
 
+  /* FINISH */
   .finish-block { display: none; text-align: center; padding: 40px 20px; border: 1px solid var(--accent); margin-top: 20px; }
   .finish-block.visible { display: block; }
   .finish-title { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; color: var(--accent); letter-spacing: 3px; }
   .finish-time { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--muted); margin-top: 8px; }
-  .finish-actions { display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+  .finish-actions { margin-top: 20px; }
   .ghost-btn { background: transparent; border: 1px solid var(--muted); color: var(--muted); padding: 14px 24px; font-family: 'DM Mono', monospace; font-size: 0.75rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; }
   .ghost-btn:hover { border-color: var(--text); color: var(--text); }
   .save-note { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--muted); margin-top: 12px; }
 
+  /* HISTORY */
   .history-empty { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--muted); text-align: center; padding: 40px 0; }
   .history-session { background: var(--surface); border: 1px solid var(--border); margin-bottom: 12px; }
   .history-header { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
@@ -197,25 +199,36 @@
 </head>
 <body>
 
-<!-- FULLSCREEN REST OVERLAY -->
-<div class="rest-overlay" id="restOverlay">
-  <div class="rest-overlay-label">Rest — next set in</div>
-  <div class="rest-overlay-count" id="restCount">50</div>
-  <div class="rest-overlay-progress"><div class="rest-overlay-fill" id="restFill"></div></div>
-  <button class="rest-skip-btn" onclick="skipRest()">Skip Rest</button>
+<!-- COMBINED REST + QUOTE SCREEN -->
+<div class="rest-screen" id="restScreen">
+  <div class="rest-screen-top">
+    <div class="rest-screen-label">Rest</div>
+    <div class="rest-screen-count" id="restCount">50</div>
+    <div class="rest-screen-progress"><div class="rest-screen-fill" id="restFill"></div></div>
+  </div>
+  <div class="rest-screen-quote">
+    <div class="rest-screen-icon" id="restIcon"></div>
+    <div class="rest-screen-msg" id="restMsg"></div>
+  </div>
+  <div class="rest-screen-btns">
+    <button class="rest-hide-btn" onclick="hideRestScreen()">Hide</button>
+    <button class="rest-skip-btn" onclick="skipRest()">Skip</button>
+  </div>
 </div>
 
-<!-- WWE MOTIVATION OVERLAY -->
-<div class="wwe-overlay" id="wweOverlay" onclick="dismissWWE()">
-  <div class="wwe-icon" id="wweIcon"></div>
-  <div class="wwe-msg" id="wweMsg"></div>
-  <div class="wwe-tap">Tap to start rest timer</div>
+<!-- MINI REST BAR -->
+<div class="mini-rest" id="miniRest">
+  <div class="mini-rest-left">
+    <div class="mini-rest-count" id="miniCount">50</div>
+    <div class="mini-rest-label">sec rest</div>
+  </div>
+  <button class="mini-expand-btn" onclick="showRestScreen()">Show ↑</button>
 </div>
 
-<!-- FULLSCREEN GO ALERT -->
+<!-- GO SCREEN -->
 <div class="go-overlay" id="goOverlay" onclick="dismissGo()">
   <div class="go-text">GO</div>
-  <div class="go-sub">Tap anywhere to continue</div>
+  <div class="go-sub">Tap to continue</div>
 </div>
 
 <div class="nav">
@@ -229,9 +242,15 @@
       <h1>Session</h1>
       <div class="subtitle">Upper Body · 3 sets each</div>
     </div>
-    <div class="timer-block">
-      <div class="session-timer" id="sessionTimer">00:00</div>
-      <div class="timer-label">Elapsed</div>
+    <div class="header-right">
+      <div class="timer-block">
+        <div class="session-timer" id="sessionTimer">00:00</div>
+        <div class="timer-label">Elapsed</div>
+      </div>
+      <div class="wake-toggle" onclick="toggleWakeLock()">
+        <div class="wake-dot" id="wakeDot"></div>
+        <div class="wake-toggle-label" id="wakeLabel">Screen off</div>
+      </div>
     </div>
   </div>
   <button class="start-btn" id="startBtn" onclick="startWorkout()">Start Session</button>
@@ -260,7 +279,7 @@
 
 <script>
 const DEFAULT_EXERCISES = [
-  { id: 'bench',   name: "Dumbbell Bench Press", weight: "15kg each",   sets: 3, reps: "8–10",   link: "https://www.youtube.com/shorts/o7TvO377OqA", hint: null },
+  { id: 'bench',   name: "Dumbbell Bench Press", weight: "17.5kg each", sets: 3, reps: "8–10",   link: "https://www.youtube.com/shorts/o7TvO377OqA", hint: null },
   { id: 'row',     name: "Dumbbell Row",          weight: "12.5kg each", sets: 3, reps: "8–10",   link: "https://www.youtube.com/shorts/z0rtLeSW5Cc", hint: "BOTH hands simultaneously — one dumbbell in each hand, pull together." },
   { id: 'ohp',     name: "Overhead Press",        weight: "12.5kg each", sets: 3, reps: "8–10",   link: "https://www.youtube.com/shorts/wO0l5jW2NtQ", hint: null },
   { id: 'lateral', name: "Lateral Raise",         weight: "5kg each",    sets: 3, reps: "12–15",  link: "https://www.youtube.com/shorts/lnVEvYCBGDo", hint: null },
@@ -270,32 +289,23 @@ const DEFAULT_EXERCISES = [
 ];
 
 const WWE_QUOTES = [
-  { icon: "💀", msg: "REST IN PEACE... TO YOUR EXCUSES." },
-  { icon: "🍺", msg: "AND THAT'S THE BOTTOM LINE — BECAUSE STONE COLD SAID SO." },
-  { icon: "🐍", msg: "CAN YOU SMELLLLLL WHAT THE GYM IS COOKING." },
-  { icon: "🎤", msg: "IF YA SMELLLL... WHAT YOU'RE BUILDING." },
-  { icon: "🔔", msg: "BUSINESS IS ABOUT TO PICK UP." },
-  { icon: "💪", msg: "DX SAYS... LIFT IT OR LOSE IT." },
-  { icon: "👑", msg: "I AM THE GAME. AND THIS IS MY SESSION." },
-  { icon: "🐍", msg: "IT DOESN'T MATTER WHAT YOUR ARMS THOUGHT." },
-  { icon: "⚡", msg: "THIS IS YOUR TIME. THIS IS YOUR MOMENT." },
-  { icon: "🍺", msg: "STONE COLD SAYS KEEP GOING." },
-  { icon: "🎺", msg: "OH YOU DIDN'T KNOW? YOUR GAINS ARE ABOUT TO SHOW." },
-  { icon: "🔥", msg: "SUCK IT. AND DO THE NEXT SET." },
-  { icon: "💀", msg: "NO CHANCE IN HELL... YOU'RE STOPPING NOW." },
-  { icon: "🏆", msg: "AND NEW... PERSONAL RECORD CHAMPION OF THE WORLD." },
-  { icon: "🐍", msg: "THE MOST ELECTRIFYING WORKOUT IN GYM ENTERTAINMENT TODAY." },
-  { icon: "⚡", msg: "ENOUGH TALK. TIME TO WALK." },
+  { icon: "🍺", msg: "THAT'S THE BOTTOM LINE CAUSE STONE COLD SAID SO" },
+  { icon: "🐍", msg: "CAN YOU SMELLLLLL WHAT THE IRON IS COOKING" },
+  { icon: "💀", msg: "REST IN PEACE... YOUR EXCUSES" },
+  { icon: "🔔", msg: "BUSINESS IS ABOUT TO PICK UP" },
+  { icon: "🎤", msg: "IT DOESN'T MATTER WHAT YOUR ARMS THINK" },
+  { icon: "🕹️", msg: "I AM THE GAME AND YOU WILL BOW DOWN" },
+  { icon: "🔥", msg: "SUCK IT. NOW DO THE NEXT SET." },
+  { icon: "👑", msg: "IF YA SMELLLL... WHAT YOU'RE BUILDING" },
+  { icon: "💪", msg: "OH YOU DIDN'T KNOW? YOUR GAINS ARE ABOUT TO SHOW" },
+  { icon: "⚡", msg: "AUSTIN 3:16 SAYS YOU JUST LIFTED THAT" },
+  { icon: "🎺", msg: "OH YOU DIDN'T KNOW? BOW DOWN TO THE KING" },
+  { icon: "💀", msg: "NO CHANCE IN HELL YOU'RE STOPPING NOW" },
+  { icon: "🐍", msg: "THE MOST ELECTRIFYING MAN IN GYM ENTERTAINMENT" },
+  { icon: "🏆", msg: "AND NEW PERSONAL RECORD CHAMPION OF THE WORLD" },
+  { icon: "🍺", msg: "WHAT? WHAT? WHAT? DO THE NEXT SET." },
+  { icon: "🔥", msg: "THIS IS YOUR TIME. THIS IS YOUR MOMENT." },
 ];
-
-let lastWWEIdx = -1;
-
-function getWWEQuote() {
-  let idx;
-  do { idx = Math.floor(Math.random() * WWE_QUOTES.length); } while (idx === lastWWEIdx);
-  lastWWEIdx = idx;
-  return WWE_QUOTES[idx];
-}
 
 const REST_DURATION = 50;
 let exercises = [];
@@ -307,8 +317,12 @@ let started = false;
 let sessionSaved = false;
 let toastTimeout = null;
 let restInterval = null;
-let restRemaining = 0;
+let restStartTimestamp = null;
+let restRunning = false;
+let restScreenHidden = false;
+let lastQuoteIdx = -1;
 let wakeLock = null;
+let wakeLockEnabled = false;
 const total = DEFAULT_EXERCISES.reduce((a, e) => a + e.sets, 0);
 
 // ── STORAGE ──
@@ -316,18 +330,54 @@ function storageGet(key) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
   catch { return null; }
 }
-function storageSet(key, value) {
-  try { localStorage.setItem(key, JSON.stringify(value)); }
-  catch(e) { console.error('Storage error:', e); }
+function storageSet(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
 }
 
 // ── WAKE LOCK ──
 async function acquireWakeLock() {
-  try { if ('wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); } } catch {}
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLockEnabled = true;
+      updateWakeLockUI();
+    }
+  } catch {}
 }
 function releaseWakeLock() {
   try { if (wakeLock) { wakeLock.release(); wakeLock = null; } } catch {}
+  wakeLockEnabled = false;
+  updateWakeLockUI();
 }
+async function toggleWakeLock() {
+  if (wakeLockEnabled) { releaseWakeLock(); }
+  else { await acquireWakeLock(); }
+}
+function updateWakeLockUI() {
+  document.getElementById('wakeDot').className = 'wake-dot' + (wakeLockEnabled ? ' on' : '');
+  document.getElementById('wakeLabel').textContent = wakeLockEnabled ? 'Screen on' : 'Screen off';
+}
+
+// Re-acquire wake lock if page becomes visible again
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState === 'visible' && wakeLockEnabled && !wakeLock) {
+    await acquireWakeLock();
+  }
+  // Recalculate rest timer if it was running while hidden
+  if (document.visibilityState === 'visible' && restRunning && restStartTimestamp) {
+    const elapsed = Math.floor((Date.now() - restStartTimestamp) / 1000);
+    const remaining = Math.max(0, REST_DURATION - elapsed);
+    if (remaining <= 0) {
+      finishRest();
+    } else {
+      restRemaining = remaining;
+      document.getElementById('restCount').textContent = remaining;
+      document.getElementById('miniCount').textContent = remaining;
+    }
+  }
+});
+
+let restRemaining = REST_DURATION;
 
 function init() {
   const saved = storageGet('exercises');
@@ -360,63 +410,83 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('visible');
   clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => t.classList.remove('visible'), 4000);
-}
-
-// ── WWE OVERLAY ──
-function showWWE(thenRest) {
-  const quote = getWWEQuote();
-  document.getElementById('wweIcon').textContent = quote.icon;
-  document.getElementById('wweMsg').textContent = quote.msg;
-  document.getElementById('wweOverlay').dataset.thenRest = thenRest ? '1' : '0';
-  document.getElementById('wweOverlay').classList.add('visible');
-}
-
-function dismissWWE() {
-  const overlay = document.getElementById('wweOverlay');
-  overlay.classList.remove('visible');
-  if (overlay.dataset.thenRest === '1') startRestTimer();
+  toastTimeout = setTimeout(() => t.classList.remove('visible'), 3500);
 }
 
 // ── REST TIMER ──
+function getQuote() {
+  let idx;
+  do { idx = Math.floor(Math.random() * WWE_QUOTES.length); } while (idx === lastQuoteIdx);
+  lastQuoteIdx = idx;
+  return WWE_QUOTES[idx];
+}
+
 function startRestTimer() {
   clearInterval(restInterval);
   restRemaining = REST_DURATION;
-  const overlay = document.getElementById('restOverlay');
-  const count = document.getElementById('restCount');
+  restStartTimestamp = Date.now();
+  restRunning = true;
+  restScreenHidden = false;
+
+  const q = getQuote();
+  document.getElementById('restIcon').textContent = q.icon;
+  document.getElementById('restMsg').textContent = q.msg;
+  document.getElementById('restCount').textContent = REST_DURATION;
+  document.getElementById('miniCount').textContent = REST_DURATION;
+  document.getElementById('restCount').classList.remove('urgent');
+  document.getElementById('miniCount').classList.remove('urgent');
+
   const fill = document.getElementById('restFill');
-  overlay.classList.add('visible');
-  count.classList.remove('urgent');
   fill.classList.remove('urgent');
-  count.textContent = restRemaining;
   fill.style.transition = 'none';
   fill.style.width = '100%';
-  setTimeout(() => {
-    fill.style.transition = `width 1s linear`;
-    fill.style.width = '0%';
-  }, 50);
+  setTimeout(() => { fill.style.transition = `width ${REST_DURATION}s linear`; fill.style.width = '0%'; }, 50);
+
+  document.getElementById('restScreen').classList.add('visible');
+  document.getElementById('miniRest').classList.remove('visible');
+
   restInterval = setInterval(() => {
-    restRemaining--;
-    count.textContent = restRemaining;
-    if (restRemaining <= 10) { count.classList.add('urgent'); fill.classList.add('urgent'); }
-    if (restRemaining <= 0) {
-      clearInterval(restInterval);
-      overlay.classList.remove('visible');
-      showGoAlert();
+    const elapsed = Math.floor((Date.now() - restStartTimestamp) / 1000);
+    restRemaining = Math.max(0, REST_DURATION - elapsed);
+    document.getElementById('restCount').textContent = restRemaining;
+    document.getElementById('miniCount').textContent = restRemaining;
+    if (restRemaining <= 10) {
+      document.getElementById('restCount').classList.add('urgent');
+      document.getElementById('miniCount').classList.add('urgent');
+      document.getElementById('restFill').classList.add('urgent');
     }
-  }, 1000);
+    if (restRemaining <= 0) finishRest();
+  }, 500);
+}
+
+function finishRest() {
+  clearInterval(restInterval);
+  restRunning = false;
+  document.getElementById('restScreen').classList.remove('visible');
+  document.getElementById('miniRest').classList.remove('visible');
+  document.getElementById('goOverlay').classList.add('visible');
+  setTimeout(() => document.getElementById('goOverlay').classList.remove('visible'), 2500);
 }
 
 function skipRest() {
   clearInterval(restInterval);
-  document.getElementById('restOverlay').classList.remove('visible');
-  showGoAlert();
+  restRunning = false;
+  document.getElementById('restScreen').classList.remove('visible');
+  document.getElementById('miniRest').classList.remove('visible');
+  document.getElementById('goOverlay').classList.add('visible');
+  setTimeout(() => document.getElementById('goOverlay').classList.remove('visible'), 2500);
 }
 
-function showGoAlert() {
-  const go = document.getElementById('goOverlay');
-  go.classList.add('visible');
-  setTimeout(() => go.classList.remove('visible'), 2500);
+function hideRestScreen() {
+  restScreenHidden = true;
+  document.getElementById('restScreen').classList.remove('visible');
+  document.getElementById('miniRest').classList.add('visible');
+}
+
+function showRestScreen() {
+  restScreenHidden = false;
+  document.getElementById('miniRest').classList.remove('visible');
+  document.getElementById('restScreen').classList.add('visible');
 }
 
 function dismissGo() {
@@ -434,24 +504,21 @@ async function startWorkout() {
     document.getElementById('sessionTimer').textContent = formatTime(Date.now() - startTime);
   }, 1000);
   document.querySelector('.ex-card')?.classList.add('active');
-  showToast("BUSINESS IS ABOUT TO PICK UP.");
   await acquireWakeLock();
+  showToast("BUSINESS IS ABOUT TO PICK UP.");
 }
 
 function tickSet(exIdx, setIdx) {
   if (!started) return;
   const btn = document.getElementById(`set-${exIdx}-${setIdx}`);
 
-  // UNTICK if already ticked
   if (btn.classList.contains('ticked')) {
     btn.classList.remove('ticked');
     btn.textContent = `Set ${setIdx + 1}`;
-    ticked--;
+    ticked = Math.max(0, ticked - 1);
     updateProgress();
-    // Re-activate card if it was completed
-    const card = document.getElementById(`card-${exIdx}`);
-    card.classList.remove('completed');
-    card.classList.add('active');
+    document.getElementById(`card-${exIdx}`).classList.remove('completed');
+    document.getElementById(`card-${exIdx}`).classList.add('active');
     return;
   }
 
@@ -460,8 +527,14 @@ function tickSet(exIdx, setIdx) {
   ticked++;
   updateProgress();
   checkComplete(exIdx);
-  if (ticked < total) showWWE(true);
-  if (ticked === total) { skipRest(); finishWorkout(); }
+  if (ticked < total) startRestTimer();
+  if (ticked === total) {
+    clearInterval(restInterval);
+    restRunning = false;
+    document.getElementById('restScreen').classList.remove('visible');
+    document.getElementById('miniRest').classList.remove('visible');
+    finishWorkout();
+  }
 }
 
 function checkComplete(exIdx) {
@@ -516,18 +589,18 @@ function saveSession() {
 function resetWorkout() {
   ticked = 0; started = false; startTime = null; endTime = null; sessionSaved = false;
   clearInterval(sessionTimerInterval);
-  releaseWakeLock();
   clearInterval(restInterval);
-  document.getElementById('restOverlay').classList.remove('visible');
+  restRunning = false;
+  releaseWakeLock();
+  document.getElementById('restScreen').classList.remove('visible');
+  document.getElementById('miniRest').classList.remove('visible');
   document.getElementById('goOverlay').classList.remove('visible');
-  document.getElementById('wweOverlay').classList.remove('visible');
   document.getElementById('sessionTimer').textContent = '00:00';
   document.getElementById('progressBar').style.width = '0%';
   document.getElementById('progressLabel').textContent = `0 / ${total} sets`;
   document.getElementById('startBtn').disabled = false;
   document.getElementById('startBtn').textContent = 'Start Session';
   document.getElementById('finishBlock').classList.remove('visible');
-  document.getElementById('toast').classList.remove('visible');
   renderExercises();
 }
 
@@ -571,13 +644,12 @@ function toggleNotes(i) {
   document.getElementById(`ntog-${i}`).classList.toggle('open');
 }
 
+// ── HISTORY ──
 function renderHistory() {
   const history = storageGet('history') || [];
   const c = document.getElementById('historyList');
   c.innerHTML = '';
-  if (!history.length) {
-    c.innerHTML = '<div class="history-empty">No sessions yet.</div>'; return;
-  }
+  if (!history.length) { c.innerHTML = '<div class="history-empty">No sessions yet.</div>'; return; }
   history.forEach((s, si) => {
     const div = document.createElement('div');
     div.className = 'history-session';
