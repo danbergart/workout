@@ -141,7 +141,7 @@
   .ex-card.completed .ex-name { color: var(--done-text); }
   .ex-weight { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--accent); letter-spacing: 1px; line-height: 1; margin-top: 2px; }
   .ex-card.completed .ex-weight { color: var(--done-text); }
-  .ex-reps { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--muted); margin-top: 2px; letter-spacing: 1px; }
+  .ex-reps { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--text); margin-top: 2px; letter-spacing: 1px; }
   .ex-hint { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: rgba(200,241,53,0.6); margin-bottom: 12px; padding: 5px 10px; border-left: 2px solid rgba(200,241,53,0.3); line-height: 1.5; }
   .ex-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .demo-link { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 6px 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
@@ -279,13 +279,13 @@
 
 <script>
 const DEFAULT_EXERCISES = [
-  { id: 'bench',   name: "Dumbbell Bench Press", weight: "17.5kg each", sets: 3, reps: "8–10",   link: "https://www.youtube.com/shorts/o7TvO377OqA", hint: null },
+  { id: 'bench',   name: "Dumbbell Bench Press", weight: "20kg each", sets: 3, reps: "8–10",   link: "https://www.youtube.com/shorts/o7TvO377OqA", hint: null },
   { id: 'row',     name: "Dumbbell Row",          weight: "12.5kg each", sets: 3, reps: "8–10",   link: "https://www.youtube.com/shorts/z0rtLeSW5Cc", hint: "BOTH hands simultaneously — one dumbbell in each hand, pull together." },
   { id: 'ohp',     name: "Overhead Press",        weight: "12.5kg each", sets: 3, reps: "8–10",   link: "https://www.youtube.com/shorts/wO0l5jW2NtQ", hint: null },
   { id: 'lateral', name: "Lateral Raise",         weight: "5kg each",    sets: 3, reps: "12–15",  link: "https://www.youtube.com/shorts/lnVEvYCBGDo", hint: null },
-  { id: 'curl',    name: "Dumbbell Curl",         weight: "7.5kg each",  sets: 3, reps: "10–12",  link: "https://www.youtube.com/shorts/FwApweWh6SY", hint: null },
+  { id: 'curl',    name: "Dumbbell Curl",         weight: "10kg each",   sets: 3, reps: "10–12",  link: "https://www.youtube.com/shorts/FwApweWh6SY", hint: null },
   { id: 'skull',   name: "Skull Crushers",        weight: "7.5kg each",  sets: 3, reps: "10–12",  link: "https://www.youtube.com/shorts/HurmGkvE5s0", hint: null },
-  { id: 'plank',   name: "Plank",                 weight: "Bodyweight",  sets: 3, reps: "60 sec", link: null, hint: null },
+  { id: 'abroller', name: "Ab Roller",             weight: "Bodyweight",  sets: 3, reps: "8–10",   link: "https://youtube.com/shorts/7GNGzZiyDhE?si=dobyIEJS2rWl7XhL", hint: "From knees only. Roll out slow, pull back with your core. Don't let your back collapse." },
 ];
 
 const WWE_QUOTES = [
@@ -383,6 +383,7 @@ function init() {
   const saved = storageGet('exercises');
   exercises = saved ? mergeExercises(saved) : JSON.parse(JSON.stringify(DEFAULT_EXERCISES));
   renderExercises();
+  restoreSessionState();
 }
 
 function mergeExercises(saved) {
@@ -517,6 +518,7 @@ function tickSet(exIdx, setIdx) {
     btn.textContent = `Set ${setIdx + 1}`;
     ticked = Math.max(0, ticked - 1);
     updateProgress();
+    saveSessionState();
     document.getElementById(`card-${exIdx}`).classList.remove('completed');
     document.getElementById(`card-${exIdx}`).classList.add('active');
     return;
@@ -527,6 +529,7 @@ function tickSet(exIdx, setIdx) {
   ticked++;
   updateProgress();
   checkComplete(exIdx);
+  saveSessionState();
   if (ticked < total) startRestTimer();
   if (ticked === total) {
     clearInterval(restInterval);
@@ -558,12 +561,80 @@ function updateProgress() {
 
 function finishWorkout() {
   clearInterval(sessionTimerInterval);
+  clearSessionState();
   releaseWakeLock();
   endTime = Date.now();
   document.getElementById('finishTime').textContent = `Total time: ${formatTime(endTime - startTime)}`;
   document.getElementById('finishBlock').classList.add('visible');
   document.getElementById('finishBlock').scrollIntoView({ behavior: 'smooth' });
   saveSession();
+}
+
+function saveSessionState() {
+  if (!started) return;
+  const state = {
+    ticked,
+    startTime,
+    sets: exercises.map((ex, i) =>
+      Array.from({length: ex.sets}, (_, s) => !!document.getElementById(`set-${i}-${s}`)?.classList.contains('ticked'))
+    ),
+    notes: exercises.map((_, i) => document.getElementById(`notes-${i}`)?.value?.trim() || '')
+  };
+  storageSet('sessionState', state);
+}
+
+function restoreSessionState() {
+  const state = storageGet('sessionState');
+  if (!state || !state.startTime) return;
+  started = true;
+  startTime = state.startTime;
+  ticked = state.ticked || 0;
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('startBtn').textContent = 'Session Active';
+  sessionTimerInterval = setInterval(() => {
+    document.getElementById('sessionTimer').textContent = formatTime(Date.now() - startTime);
+  }, 1000);
+  // Restore ticked sets
+  if (state.sets) {
+    state.sets.forEach((exSets, i) => {
+      exSets.forEach((tck, s) => {
+        if (tck) {
+          const btn = document.getElementById(`set-${i}-${s}`);
+          if (btn) { btn.classList.add('ticked'); btn.textContent = `Set ${s+1}`; }
+        }
+      });
+      // Check if exercise completed
+      const ex = exercises[i];
+      let allDone = true;
+      for (let s = 0; s < ex.sets; s++) {
+        if (!document.getElementById(`set-${i}-${s}`)?.classList.contains('ticked')) { allDone = false; break; }
+      }
+      if (allDone) {
+        document.getElementById(`card-${i}`)?.classList.add('completed');
+      }
+    });
+  }
+  if (state.notes) {
+    state.notes.forEach((note, i) => {
+      const el = document.getElementById(`notes-${i}`);
+      if (el && note) el.value = note;
+    });
+  }
+  updateProgress();
+  acquireWakeLock();
+  // Find first active card
+  for (let i = 0; i < exercises.length; i++) {
+    const card = document.getElementById(`card-${i}`);
+    if (card && !card.classList.contains('completed')) {
+      card.classList.add('active');
+      break;
+    }
+  }
+}
+
+function clearSessionState() {
+  storageSet('sessionState', null);
+  localStorage.removeItem('sessionState');
 }
 
 function saveSession() {
@@ -601,6 +672,7 @@ function resetWorkout() {
   document.getElementById('startBtn').disabled = false;
   document.getElementById('startBtn').textContent = 'Start Session';
   document.getElementById('finishBlock').classList.remove('visible');
+  clearSessionState();
   renderExercises();
 }
 
