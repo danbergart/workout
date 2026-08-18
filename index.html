@@ -240,7 +240,7 @@
   <div class="page-header">
     <div>
       <h1>Session</h1>
-      <div class="subtitle">Upper Body · 3 sets each</div>
+      <div class="subtitle">Full Body · Warm-up + Injury Prevention</div>
     </div>
     <div class="header-right">
       <div class="timer-block">
@@ -255,7 +255,7 @@
   </div>
   <button class="start-btn" id="startBtn" onclick="startWorkout()">Start Session</button>
   <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
-  <div class="progress-label" id="progressLabel">0 / 21 sets</div>
+  <div class="progress-label" id="progressLabel">0 / 0 sets</div>
   <div id="exercises"></div>
   <div class="finish-block" id="finishBlock">
     <div class="finish-title">Session Done 💪</div>
@@ -279,13 +279,16 @@
 
 <script>
 const DEFAULT_EXERCISES = [
-  { id: 'bench',   name: "Dumbbell Bench Press", weight: "20kg each", sets: 3, reps: "8–10",   link: "https://www.youtube.com/shorts/o7TvO377OqA", hint: null },
-  { id: 'row',     name: "Dumbbell Row",          weight: "12.5kg each", sets: 3, reps: "8–10",   link: "https://www.youtube.com/shorts/z0rtLeSW5Cc", hint: "BOTH hands simultaneously — one dumbbell in each hand, pull together." },
-  { id: 'ohp',     name: "Overhead Press",        weight: "12.5kg each", sets: 3, reps: "8–10",   link: "https://www.youtube.com/shorts/wO0l5jW2NtQ", hint: null },
-  { id: 'lateral', name: "Lateral Raise",         weight: "5kg each",    sets: 3, reps: "12–15",  link: "https://www.youtube.com/shorts/lnVEvYCBGDo", hint: null },
-  { id: 'curl',    name: "Dumbbell Curl",         weight: "10kg each",   sets: 3, reps: "10–12",  link: "https://www.youtube.com/shorts/FwApweWh6SY", hint: null },
-  { id: 'skull',   name: "Skull Crushers",        weight: "7.5kg each",  sets: 3, reps: "10–12",  link: "https://www.youtube.com/shorts/HurmGkvE5s0", hint: null },
-  { id: 'abroller', name: "Ab Roller",             weight: "Bodyweight",  sets: 3, reps: "8–10",   link: "https://youtube.com/shorts/7GNGzZiyDhE?si=dobyIEJS2rWl7XhL", hint: "From knees only. Roll out slow, pull back with your core. Don't let your back collapse." },
+  { id: 'rowmachine', name: "Rowing Machine",     weight: "Warm-up",     sets: 1, reps: "4 min",          link: null, hint: "Steady pace. Get the blood moving before you lift.", warmup: true },
+  { id: 'bench',      name: "Dumbbell Bench Press", weight: "20kg each", sets: 3, reps: "8–10 reps",       link: "https://www.youtube.com/shorts/o7TvO377OqA", hint: null },
+  { id: 'seatedrow',  name: "Seated Row",         weight: "Set on machine", sets: 3, reps: "8–10 reps",    link: null, hint: null },
+  { id: 'ohp',        name: "Overhead Press",      weight: "12.5kg each", sets: 3, reps: "8–10 reps",      link: "https://www.youtube.com/shorts/wO0l5jW2NtQ", hint: null },
+  { id: 'curl',       name: "Dumbbell Curl",       weight: "10kg each",  sets: 3, reps: "10–12 reps",      link: "https://www.youtube.com/shorts/FwApweWh6SY", hint: null },
+  { id: 'abroller',   name: "Ab Roller",           weight: "Bodyweight", sets: 3, reps: "8–10 reps",       link: "https://youtube.com/shorts/7GNGzZiyDhE?si=dobyIEJS2rWl7XhL", hint: "From knees only. Roll out slow, pull back with your core. Don't let your back collapse." },
+  { id: 'legcurl',    name: "Seated Leg Curl",     weight: "Set on machine", sets: 2, reps: "12 reps",     link: null, hint: "Hamstring work — helps protect against groin/glute strain." },
+  { id: 'copenhagen', name: "Copenhagen Plank",    weight: "Bodyweight", sets: 2, reps: "10 sec each side", link: null, hint: null },
+  { id: 'slrdl',      name: "Single Leg RDL",      weight: "Bodyweight", sets: 2, reps: "6 each leg",      link: null, hint: null },
+  { id: 'glutebridge', name: "Glute Bridge",       weight: "Bodyweight", sets: 2, reps: "12 reps",         link: null, hint: null },
 ];
 
 const WWE_QUOTES = [
@@ -384,6 +387,11 @@ function init() {
   exercises = saved ? mergeExercises(saved) : JSON.parse(JSON.stringify(DEFAULT_EXERCISES));
   renderExercises();
   restoreSessionState();
+  updateProgress();
+}
+
+function setBtnLabel(exIdx, setIdx) {
+  return exercises[exIdx]?.warmup ? 'Warm-up' : `Set ${setIdx + 1}`;
 }
 
 function mergeExercises(saved) {
@@ -515,7 +523,7 @@ function tickSet(exIdx, setIdx) {
 
   if (btn.classList.contains('ticked')) {
     btn.classList.remove('ticked');
-    btn.textContent = `Set ${setIdx + 1}`;
+    btn.textContent = setBtnLabel(exIdx, setIdx);
     ticked = Math.max(0, ticked - 1);
     updateProgress();
     saveSessionState();
@@ -525,7 +533,7 @@ function tickSet(exIdx, setIdx) {
   }
 
   btn.classList.add('ticked');
-  btn.textContent = `Set ${setIdx + 1}`;
+  btn.textContent = setBtnLabel(exIdx, setIdx);
   ticked++;
   updateProgress();
   checkComplete(exIdx);
@@ -600,7 +608,7 @@ function restoreSessionState() {
       exSets.forEach((tck, s) => {
         if (tck) {
           const btn = document.getElementById(`set-${i}-${s}`);
-          if (btn) { btn.classList.add('ticked'); btn.textContent = `Set ${s+1}`; }
+          if (btn) { btn.classList.add('ticked'); btn.textContent = setBtnLabel(i, s); }
         }
       });
       // Check if exercise completed
@@ -683,7 +691,7 @@ function renderExercises() {
     const card = document.createElement('div');
     card.className = 'ex-card'; card.id = `card-${i}`;
     const sets = Array.from({length: ex.sets}, (_, s) =>
-      `<button class="set-btn" id="set-${i}-${s}" onclick="tickSet(${i},${s})">Set ${s+1}</button>`
+      `<button class="set-btn" id="set-${i}-${s}" onclick="tickSet(${i},${s})">${setBtnLabel(i, s)}</button>`
     ).join('');
     const hintHtml = ex.hint ? `<div class="ex-hint">⚑ ${ex.hint}</div>` : '';
     card.innerHTML = `
@@ -691,7 +699,7 @@ function renderExercises() {
         <div style="flex:1;">
           <div class="ex-name">${ex.name}</div>
           <div class="ex-weight" id="wd-${i}">${ex.weight}</div>
-          <div class="ex-reps">${ex.reps} reps</div>
+          <div class="ex-reps">${ex.reps}</div>
         </div>
         <div class="ex-right">
           ${ex.link ? `<a class="demo-link" href="${ex.link}" target="_blank">Demo ↗</a>` : ''}
@@ -730,7 +738,7 @@ function renderHistory() {
       const done = ex.sets?.filter(Boolean).length || 0;
       return `<div class="history-ex">
         <div class="history-ex-name">${ex.name}</div>
-        <div class="history-ex-detail">${ex.weight} · ${done}/${ex.sets?.length || 3} sets · ${ex.reps} reps</div>
+        <div class="history-ex-detail">${ex.weight} · ${done}/${ex.sets?.length || 3} sets · ${ex.reps}</div>
         ${ex.note ? `<div class="history-ex-note">→ ${ex.note}</div>` : ''}
       </div>`;
     }).join('');
